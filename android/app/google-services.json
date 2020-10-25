@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "84159679458",
+    "firebase_url": "https://kloteryapp.firebaseio.com",
+    "project_id": "kloteryapp",
+    "storage_bucket": "kloteryapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84159679458:android:e85767a660633ccc2b47bb",
+        "android_client_info": {
+          "package_name": "com.kobi.lottery_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "84159679458-jaahm2olpo3nqi15bt6qtg7ovn0e1rls.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kobi.lottery_app",
+            "certificate_hash": "8f9fd4864ca9d7db97c0a82de4f815b444afffbb"
+          }
+        },
+        {
+          "client_id": "84159679458-23g6b1c1rph2n8gggjn0jrs0eq80h0ad.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOIXdPrfQifXbXTtzDZ0OrCuzTwGm0gCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "84159679458-23g6b1c1rph2n8gggjn0jrs0eq80h0ad.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
