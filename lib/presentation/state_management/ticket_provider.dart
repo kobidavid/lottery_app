@@ -6,6 +6,8 @@ import 'package:lottery_app/domain/usecases/marked_num_of_desired_rows.dart';
 class TicketProvider extends ChangeNotifier {
   Ticket ticket = Ticket();
 
+  static String type;
+
   List<bool> get getMarkNumOfRows => Ticket.markNumOfRows;
 
   //List<List<List<bool>>> get getListOfAllTables => listOfAllTables;
@@ -13,6 +15,10 @@ class TicketProvider extends ChangeNotifier {
   List<List<List<bool>>> get getAllTablesNumbers => Ticket.listOfAllTables;
   static int currentNumOnRow = 6;
 
+  static bool buttonAtTheMiddle=false;
+
+  static bool missing_checkboxes=true;
+  
   void desireNumOfRows(int numOfRow) {
     ticket.setMarkNumOfRows(numOfRow);
     ticket.setMarkNumOfRows(currentNumOnRow);
@@ -37,7 +43,7 @@ class TicketProvider extends ChangeNotifier {
 
   void updateStrongTables(int numOfRow, int num) {
     ticket.setListOfAllTablesStrongNum(numOfRow, num);
-    print('sss');
+    print('you replace strong num row:$numOfRow strongnum:$num+1');
     notifyListeners();
   }
 
@@ -63,18 +69,19 @@ class TicketProvider extends ChangeNotifier {
     //prepare a strong list
     for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
       for (int j = 0; j < 7; j++) {
-        if (Ticket.listOfAllTablesStrongNum[0][i][j] == true) {
+        if (Ticket.listOfAllTablesStrongNum[0][i][j] == true) {  //
           myIntStrongList[0][i].add(j + 1);
         } else {}
       }
     }
 
+    //prepare a list of regular number
     for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
       for (int j = 0; j < 37; j++) {
         if (Ticket.listOfAllTables[0][i][j] == true) {
           if (myIntList[0][i].length == 6) {
             print('d');
-            myIntList[0][i].add(myIntStrongList[0][i][0]);
+            myIntList[0][i].add(myIntList[0][i][0]);
           } else {
             myIntList[0][i].add(j + 1);
           }
@@ -86,7 +93,7 @@ class TicketProvider extends ChangeNotifier {
       if (myIntList[0][i].length != 6) {
         ticketIsOkCounter++;
       }
-      ;
+
     }
 
     for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
@@ -96,10 +103,10 @@ class TicketProvider extends ChangeNotifier {
 
     }
     if(ticketIsOkCounter==0 &&ticketIsOkCounterStrongNum==0){
-      ticketIsOkCounter = 0;
-      ticketIsOkCounterStrongNum = 0;
+      ticketIsOkCounter = 0; ticketIsOkCounterStrongNum = 0;
+      missing_checkboxes=false;
       FirestoreService firestoreService=FirestoreService();
-      firestoreService.addUser(myIntList,myIntStrongList);
+      firestoreService.addUser(myIntList,myIntStrongList,currentNumOnRow);
 
     }
     else{
@@ -107,5 +114,15 @@ class TicketProvider extends ChangeNotifier {
       ticketIsOkCounterStrongNum = 0;
       //return false;
     }
+  }
+
+  positionOfSendButton(String buttonPosition){
+     if (buttonPosition=="center"){
+       buttonAtTheMiddle=true;
+     }
+     else{
+       buttonAtTheMiddle=false;
+     }
+     notifyListeners();
   }
 }

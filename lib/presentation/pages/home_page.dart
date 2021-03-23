@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottery_app/domain/entities/user_entity.dart';
 import 'package:lottery_app/presentation/pages/regular_ticket.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottery_app/presentation/state_management/login_provider.dart';
 import 'package:provider/provider.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_it/get_it.dart';
 class HomePage extends StatelessWidget {
   final String title;
-
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  GetIt getIt =GetIt.instance;
   HomePage({@required this.title});
-
+  void setup() {
+    getIt.registerSingleton<UserEntity>(UserEntity());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,31 +31,48 @@ class HomePage extends StatelessWidget {
           new Container(
             width: MediaQuery.of(context).size.width,
             child: SafeArea(child: Consumer<LoginProvider>(
-                builder: (context, loginProvider, child) {
-              return Consumer<LoginProvider>(builder: (context,loginProvider,child){
-                return Center(
-                    child: Column(
-                  children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.secularOne(
-                          fontSize: 33, fontWeight: FontWeight.w700),
-                    ),
-                   // Text(userState()==true?auth.currentUser.email:""),
-                    Text(auth.currentUser?.email??""),
-                    //Text(userState()!=null?auth.currentUser.email:""),
-                    GestureDetector(
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(
-                            color: Colors.blue.shade900,
-                            fontWeight: FontWeight.bold),
+                builder: (context, loginProvider, _) {
+                  return Center(
+                      child: Column(
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.secularOne(
+                            fontSize: 22, fontWeight: FontWeight.w700),
                       ),
-                      onTap: () {loginProvider.logOutUser();},
-                    ),
-                  ],
-              ));},
-              );
+                      // Text(userState()==true?auth.currentUser.email:""),
+                      Text(loginProvider.userEmail ?? "kkdd"),
+                      //Text(auth.signInWithCredential(credential).),
+                      //Text(userState()!=null?auth.currentUser.email:""),
+                      GestureDetector(
+                        child: Text(
+                          "Logout",
+                          style: TextStyle(
+                              color: Colors.blue.shade900,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onTap: () async {
+                          //SharedPreferences prefs = await SharedPreferences.getInstance();
+                          //prefs.setBool('isRegister', true);
+                          loginProvider.logOutUser();
+                        },
+                      ),
+                      GestureDetector(
+                        child: Text(
+                          "delete spref",
+                          style: TextStyle(
+                              color: Colors.blue.shade900,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onTap: ()  async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.remove("isRegister");
+
+                        },
+                      ),
+                    ],
+                  ));
+
             })),
             height: 170.0,
             decoration: new BoxDecoration(
@@ -143,9 +162,7 @@ class HomePage extends StatelessWidget {
   }
 
   bool userState() {
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User user) {
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
         return false;
       }

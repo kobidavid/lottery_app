@@ -1,26 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
+import 'package:lottery_app/presentation/pages/home_page.dart';
 import 'package:lottery_app/presentation/pages/login_page.dart';
-
+import 'package:lottery_app/presentation/pages/payment_page.dart';
+import 'package:lottery_app/presentation/state_management/register_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../widget/custom_widgets.dart'; //contains all custom widgets under /lib/presentation/widget
 import 'package:google_sign_in/google_sign_in.dart';
 
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+
   TextEditingController userNameController = TextEditingController();
+
   TextEditingController userIdController = TextEditingController();
+
   TextEditingController userPhoneNumberController = TextEditingController();
+
   TextEditingController userEmailController = TextEditingController();
 
-  //FirebaseFirestore fireStore = FirebaseFirestore.instance;
-  FirebaseAuth firebaseAuth= FirebaseAuth.instance;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   UserEntity userEntity;
 
+
   @override
   Widget build(BuildContext context) {
+    //userNameController.addListener(() {print(userNameController.text); });
+
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -41,82 +59,34 @@ class RegisterPage extends StatelessWidget {
                     ),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: TextFormField(
-                          controller: userNameController,
-                          decoration: InputDecoration(
-                              labelText: 'שם משתמש', alignLabelWithHint: false),
-                          textDirection: TextDirection.rtl,
-                          onSaved: (String value) {
-                            // This optional block of code can be used to run
-                            // code when the user saves the form.
-                          },
-                          validator: (String value) {
-                            if (value.isEmpty) {
-                              return "נא הזן שם משתמש";
-                            }
-                            //return value.contains('@') ? 'Do not use the @ char.' : null;
-                          },
-                        )),
+                        child: ReusableTextField(
+                            userNameController: userNameController,
+                            labelName: "שם משתמש",
+                            returnErr: "נא הזן שם משתמש",
+                            textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: TextFormField(
-                            controller: userIdController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                labelText: 'תעודת זהות',
-                                alignLabelWithHint: false),
-                            textDirection: TextDirection.rtl,
-                            onSaved: (String value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
-                            validator: (String value) {
-                              if (value.isEmpty) {
-                                return "נא הזן תעודת זהות";
-                              }
-                              //return value.contains('@') ? 'Do not use the @ char.' : null;
-                            })),
+                        child: ReusableTextField(
+                            userNameController: userIdController,
+                            labelName: "תעודת זהות",
+                            returnErr: "נא הזן תעודת זהות",
+                            textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: TextFormField(
-                            controller: userPhoneNumberController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                labelText: 'טלפון נייד',
-                                alignLabelWithHint: false),
-                            textDirection: TextDirection.rtl,
-                            onSaved: (String value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
-                            validator: (String value) {
-                              if (value.isEmpty) {
-                                return "נא הזן טלפון נייד ";
-                              }
-                              //return value.contains('@') ? 'Do not use the @ char.' : null;
-                            })),
+                        child: ReusableTextField(
+                            userNameController: userPhoneNumberController,
+                            labelName: "טלפון נייד",
+                            returnErr: "נא הזן טלפון נייד",
+                            textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: TextFormField(
-                            controller: userEmailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                                labelText: 'אימייל', alignLabelWithHint: false),
-                            textDirection: TextDirection.rtl,
-                            onSaved: (String value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
-                            validator: (String value) {
-                              if (value.isEmpty) {
-                                return "נא הזן כתובת אימייל ";
-                              }
-                              return !value.contains('@')
-                                  ? 'כתובת אימייל לא תקינה'
-                                  : null;
-                            })),
+                        child: ReusableTextField(
+                            userNameController: userEmailController,
+                            labelName: "אימייל",
+                            returnErr: "כתובת אימייל לא תקינה",
+                            textDirection: TextDirection.ltr)),
                     SizedBox(
-                        height: 20,
+                      height: 20,
                     ),
                     RaisedButton(
                         child: Text('רישום'),
@@ -129,25 +99,33 @@ class RegisterPage extends StatelessWidget {
                               email: userEmailController.text);
 
                           if (_formKey.currentState.validate()) {
+                            print(user.id);
                             /* Scaffold.of(context).showSnackBar(
                               SnackBar(content: Text('Processing Data')));*/
                             //print(userEmailController.text);
-                           // signInWithGoogle();
+                            // signInWithGoogle();
 
-                           /* CollectionReference users =
-                                fireStore.instance.collection('users');
+                            CollectionReference users =
+                                FirebaseFirestore.instance.collection('users');
 
                             users
                                 .doc(user.id)
                                 .set({
-                                  'full_name': user.name, // John Doe
-                                  'user_id': user.id, // John Doe
-                                  'user_phone': user.phone, // Stokes and Sons
-                                  'user_email': user.email, // Stokes and Sons
+                                  'full_name': user.name,
+                                  'user_id': user.id,
+                                  'user_phone': user.phone,
+                                  'user_email': user.email,
                                 })
                                 .then((value) => print("User Added"))
+                                .then((value) => addToSharedPrefAsRegister())
+                                .then((value) => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        PaymentPage()))
                                 .catchError((error) =>
-                                    print("Failed to add user: $error"));*/
+                                    print("Failed to add user: $error"))
+                                .then((value) => print('fff')));
                           }
                         }),
                     SizedBox(
@@ -158,14 +136,20 @@ class RegisterPage extends StatelessWidget {
                         child: Text('כבר רשום? מחכים לך כאן'),
                       ),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          ),
-                        );
+                        print('ddd');
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    LoginPage()));
                       },
                     ),
+                   /* Center(
+                      child: Consumer<RegisterProvider>(
+                          builder: (context, registerProviderProvider, child) {
+                        return Text(registerProviderProvider.a.toString());
+                      }),
+                    )*/
                   ],
                 ),
               )),
@@ -173,4 +157,9 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
+}
+
+addToSharedPrefAsRegister() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool('isRegister', true);
 }
