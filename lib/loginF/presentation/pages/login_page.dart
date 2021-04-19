@@ -5,13 +5,16 @@ import 'dart:io' as io;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottery_app/presentation/pages/register_page.dart';
+import 'package:lottery_app/core/shared_preferences_names.dart';
+import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
-import 'package:lottery_app/presentation/state_management/login_provider.dart';
+import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 //import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -46,7 +49,11 @@ class LoginPage extends StatelessWidget {
                   height: 20,
                 ),
 
-                    SignInButton(Buttons.Google, text:('Sign in with Google'),onPressed: ()=> Provider.of<LoginProvider>(context, listen: false).signInWithGoogle())
+                    SignInButton(Buttons.Google, text:('Sign in with Google'),onPressed: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      if(prefs.getString(USER_NAME).isNotEmpty){
+                        Provider.of<LoginProvider>(context, listen: false).signInWithGoogle();
+                    }})
                     /*if (LoginProvider.signInWithGoogle() != null) {
                       print('Login success! Lets pay');
                       Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => RegularTicket()));

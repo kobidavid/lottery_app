@@ -1,13 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lottery_app/presentation/pages/login_page.dart';
-import 'package:lottery_app/presentation/pages/register_page.dart';
+import 'package:lottery_app/core/shared_preferences_names.dart';
+import 'package:lottery_app/loginF/presentation/pages/login_page.dart';
+import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
+import 'package:lottery_app/loginF/presentation/state_management/register_provider.dart';
 import 'package:lottery_app/presentation/pages/payment_page.dart';
-import 'package:lottery_app/presentation/state_management/login_provider.dart';
+import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:lottery_app/presentation/state_management/ticket_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widget/custom_widgets.dart'; //contains all custom widgets under /lib/presentation/widget
+import '../../core/widget/custom_widgets.dart'; //contains all custom widgets under /lib/presentation/widget
 
 class RegularTicket extends StatefulWidget {
   @override
@@ -88,48 +90,34 @@ class _RegularTicketState extends State<RegularTicket> {
             ),
             onTap: () async {
               //addToSharedPrefAsRegister();
-              final prefs = await SharedPreferences.getInstance();
-                if ( prefs.getBool('isRegister') == false||prefs.getBool('isRegister') == null){
-                  print(prefs.getBool('isRegister'));
+
+              ticketProvider.transferBoolArrayToInt();
+              if( TicketProvider.missing_checkboxes==false){
+                print('ticket is ok');
+                final prefs = await SharedPreferences.getInstance();
+                if ( prefs.getBool(IS_LOGIN) != true){
+                  print(prefs.getBool(IS_LOGIN));
+                  print("user is not register");
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => RegisterPage(),
                     ),
                   );
+                  TicketProvider.missing_checkboxes=true;
                 }
-                else if( prefs.getBool('isRegister') == true && auth.currentUser!=null){
-                  Navigator.push(
-                    context,
+                else{
+                  Navigator.of(
+                    context).push(
                     MaterialPageRoute(
                       builder: (context) => PaymentPage(),
                     ),
                   );
-                }else if( prefs.getBool('isRegister') == false|| auth.currentUser==null){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(),
-                    ),
-                  );
+                  TicketProvider.missing_checkboxes=true;
                 }
-               /* else if(prefs.getBool('isRegister') == false){
-                  //print(user);
-                  print(
-                      'user is not null, you are forwarding to ticketProvider.transferBoolArrayToInt()');
-                  ticketProvider.transferBoolArrayToInt();
-                  if (TicketProvider.missing_checkboxes == false) {
-                    print('user is ready to pay!!!');
-                    TicketProvider.missing_checkboxes = true;
-                    TicketProvider.type = 'regular';
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentPage(),
-                      ),
-                    );
-                  }
-                }*/
+              }else{
+                print('Ticket hasnt been filed completly ');
+              }
               });
         })
       ]),

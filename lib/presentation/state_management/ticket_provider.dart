@@ -105,8 +105,8 @@ class TicketProvider extends ChangeNotifier {
     if(ticketIsOkCounter==0 &&ticketIsOkCounterStrongNum==0){
       ticketIsOkCounter = 0; ticketIsOkCounterStrongNum = 0;
       missing_checkboxes=false;
-      FirestoreService firestoreService=FirestoreService();
-      firestoreService.addUser(myIntList,myIntStrongList,currentNumOnRow);
+      //FirestoreService firestoreService=FirestoreService();
+      //firestoreService.addUser(myIntList,myIntStrongList,currentNumOnRow);
 
     }
     else{

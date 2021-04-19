@@ -1,16 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flushbar/flushbar.dart';
+import 'package:flushbar/flushbar_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:lottery_app/core/widget/register_textfield_widget.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
-import 'package:lottery_app/presentation/pages/home_page.dart';
-import 'package:lottery_app/presentation/pages/login_page.dart';
+import 'package:lottery_app/loginF/core/flash_alert.dart';
+import 'package:lottery_app/loginF/domain/repositories/db_queries.dart';
+import 'package:lottery_app/loginF/presentation/pages/login_page.dart';
+import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
+import 'package:lottery_app/loginF/presentation/state_management/register_provider.dart';
 import 'package:lottery_app/presentation/pages/payment_page.dart';
-import 'package:lottery_app/presentation/state_management/register_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widget/custom_widgets.dart'; //contains all custom widgets under /lib/presentation/widget
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flash/flash.dart';
 
+import '../../../main.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -18,21 +25,17 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
+  //UserEntity currentUser;
 
-  TextEditingController userNameController = TextEditingController();
-
+  /*TextEditingController userNameController = TextEditingController();
   TextEditingController userIdController = TextEditingController();
-
   TextEditingController userPhoneNumberController = TextEditingController();
-
-  TextEditingController userEmailController = TextEditingController();
+  TextEditingController userEmailController = TextEditingController();*/
 
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  UserEntity userEntity;
-
-
+  //final GlobalKey<FormBuilderState> formKey = GlobalKey<FormBuilderState>();
+  final formKey = GlobalKey<FormBuilderState>();
   @override
   Widget build(BuildContext context) {
     //userNameController.addListener(() {print(userNameController.text); });
@@ -44,8 +47,9 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Container(
               padding:
                   EdgeInsets.only(left: 50, right: 50, top: 30, bottom: 30),
-              child: Form(
-                key: _formKey,
+              child: FormBuilder(
+                autovalidateMode: AutovalidateMode.always,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -59,31 +63,35 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: ReusableTextField(
-                            userNameController: userNameController,
+                        child: RegisterTextField(
+                            //controller: userNameController,
+                            name: "userName",
                             labelName: "שם משתמש",
                             returnErr: "נא הזן שם משתמש",
                             textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: ReusableTextField(
-                            userNameController: userIdController,
+                        child: RegisterTextField(
+                            //controller: userIdController,
+                            name: "userId",
                             labelName: "תעודת זהות",
-                            returnErr: "נא הזן תעודת זהות",
+                            returnErr: "נא הכנס תעודת זהות",
                             textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: ReusableTextField(
-                            userNameController: userPhoneNumberController,
+                        child: RegisterTextField(
+                            name: "userPhone",
+                            //controller: userPhoneNumberController,
                             labelName: "טלפון נייד",
-                            returnErr: "נא הזן טלפון נייד",
+                            returnErr: "נא הכנס טלפון נייד",
                             textDirection: TextDirection.rtl)),
                     Directionality(
                         textDirection: TextDirection.rtl,
-                        child: ReusableTextField(
-                            userNameController: userEmailController,
+                        child: RegisterTextField(
+                            name: "userEmail",
+                            //controller: userEmailController,
                             labelName: "אימייל",
-                            returnErr: "כתובת אימייל לא תקינה",
+                            returnErr: "נא הכנס כתובת אימייל",
                             textDirection: TextDirection.ltr)),
                     SizedBox(
                       height: 20,
@@ -92,40 +100,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Text('רישום'),
                         color: Colors.red,
                         onPressed: () {
-                          UserEntity user = UserEntity(
-                              id: userIdController.text,
-                              name: userNameController.text,
-                              phone: userPhoneNumberController.text,
-                              email: userEmailController.text);
-
-                          if (_formKey.currentState.validate()) {
-                            print(user.id);
-                            /* Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text('Processing Data')));*/
-                            //print(userEmailController.text);
-                            // signInWithGoogle();
-
-                            CollectionReference users =
-                                FirebaseFirestore.instance.collection('users');
-
-                            users
-                                .doc(user.id)
-                                .set({
-                                  'full_name': user.name,
-                                  'user_id': user.id,
-                                  'user_phone': user.phone,
-                                  'user_email': user.email,
-                                })
-                                .then((value) => print("User Added"))
-                                .then((value) => addToSharedPrefAsRegister())
-                                .then((value) => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        PaymentPage()))
-                                .catchError((error) =>
-                                    print("Failed to add user: $error"))
-                                .then((value) => print('fff')));
+                          if (formKey.currentState.saveAndValidate()) {
+                            UserEntity currentUser =UserEntity();
+                            currentUser.name = formKey.currentState.fields['userName'].value;
+                            currentUser.id = formKey.currentState.fields['userId'].value;
+                            currentUser.phone = formKey.currentState.fields['userPhone'].value;
+                            currentUser.email = formKey.currentState.fields['userEmail'].value;
+                            DBQueries ddd=DBQueries();
+                            ddd.addUser(context,currentUser);
+                            //Provider.of<LoginProvider>(context,listen: false).getSPuserNameValue();
                           }
                         }),
                     SizedBox(
@@ -144,7 +127,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                     LoginPage()));
                       },
                     ),
-                   /* Center(
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () => showFlushbar1(context),
+                      child: Text('Basics | Duration'),
+                    ),
+                    /* Center(
                       child: Consumer<RegisterProvider>(
                           builder: (context, registerProviderProvider, child) {
                         return Text(registerProviderProvider.a.toString());
@@ -157,9 +147,32 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  Widget _showBasicsFlash({
+    Duration duration,
+    flashStyle = FlashStyle.floating,
+  }) {
+    showFlash(
+      context: context,
+      duration: duration,
+      builder: (context, controller) {
+        return Flash(
+          controller: controller,
+          style: flashStyle,
+          boxShadows: kElevationToShadow[4],
+          horizontalDismissDirection: HorizontalDismissDirection.horizontal,
+          child: FlashBar(
+            message: Text('This is a basic flash'),
+          ),
+        );
+      },
+    );
+  }
 }
 
+/*
 addToSharedPrefAsRegister() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setBool('isRegister', true);
 }
+*/

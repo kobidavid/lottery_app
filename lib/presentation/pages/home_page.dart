@@ -1,87 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottery_app/core/shared_preferences_names.dart';
+import 'package:lottery_app/domain/entities/spEntity.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
+import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:lottery_app/presentation/pages/regular_ticket.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lottery_app/presentation/state_management/login_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
+
 class HomePage extends StatelessWidget {
   final String title;
   final FirebaseAuth auth = FirebaseAuth.instance;
-  GetIt getIt =GetIt.instance;
+  GetIt getIt = GetIt.instance;
+
+  //LoginProvider uName=Provider.of<SharedPreferenceName.>(context);
   HomePage({@required this.title});
+
   void setup() {
     getIt.registerSingleton<UserEntity>(UserEntity());
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*  appBar: AppBar(
+      appBar: AppBar(
+        shadowColor: Colors.white,
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.transparent,
+        leading:
+            Consumer<LoginProvider>(builder: (context, loginProvider, child) {
+          if (loginProvider.spLogin ==true) {
+            return CircleAvatar(
+                radius: 9.0,
+                child: Center(
+                    child: Text(loginProvider.spName != null
+                        ? loginProvider.spName
+                        : "NA")));
+          } else {return Text('');}
+          ;
+        }),
+
+        actions: [Icon(Icons.menu)],
         title: Text(title),
-        elevation: 6,
+        elevation: 0,
         //shape: AnimationController(),
-        shadowColor: Colors.orange,
-      ),*/
+        // shadowColor: Colors.orange,
+      ),
       body: Column(
         children: [
           new Container(
             width: MediaQuery.of(context).size.width,
-            child: SafeArea(child: Consumer<LoginProvider>(
-                builder: (context, loginProvider, _) {
-                  return Center(
-                      child: Column(
-                    children: [
-                      Text(
-                        title,
-                        style: GoogleFonts.secularOne(
-                            fontSize: 22, fontWeight: FontWeight.w700),
-                      ),
-                      // Text(userState()==true?auth.currentUser.email:""),
-                      Text(loginProvider.userEmail ?? "kkdd"),
-                      //Text(auth.signInWithCredential(credential).),
-                      //Text(userState()!=null?auth.currentUser.email:""),
-                      GestureDetector(
-                        child: Text(
-                          "Logout",
-                          style: TextStyle(
-                              color: Colors.blue.shade900,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onTap: () async {
-                          //SharedPreferences prefs = await SharedPreferences.getInstance();
-                          //prefs.setBool('isRegister', true);
-                          loginProvider.logOutUser();
-                        },
-                      ),
-                      GestureDetector(
-                        child: Text(
-                          "delete spref",
-                          style: TextStyle(
-                              color: Colors.blue.shade900,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onTap: ()  async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          prefs.remove("isRegister");
+            child: SafeArea(
+                child: Center(
+                    child: Column(
+              children: [
+                Text(
+                  "",
+                  style: GoogleFonts.secularOne(
+                      fontSize: 22, fontWeight: FontWeight.w700),
+                ),
+                // Text(userState()==true?auth.currentUser.email:""),
+                //Text(loginProvider.userEmail ?? "kkdd"),
+                //Text(auth.signInWithCredential(credential).),
+                //Text(userState()!=null?auth.currentUser.email:""),
+                GestureDetector(
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(
+                        color: Colors.blue.shade900,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  onTap: ()  {
+                    Provider.of<LoginProvider>(context,listen: false).spLogOut();
 
-                        },
-                      ),
-                    ],
-                  ));
-
-            })),
+                  },
+                ),
+                /*GestureDetector(
+                  child: Text(
+                    "delete spref",
+                    style: TextStyle(
+                        color: Colors.blue.shade900,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    //prefs.remove("isRegister");
+                    //prefs.setBool(IS_REGISTERED, false);
+                    await prefs.clear();
+                    print("prefs.clear()");
+                  },
+                ),*/
+              ],
+            ))),
             height: 170.0,
-            decoration: new BoxDecoration(
+            /* decoration: new BoxDecoration(
               color: Color(0xffe678ff),
               boxShadow: [new BoxShadow(blurRadius: 20.0)],
               borderRadius: new BorderRadius.vertical(
                   bottom: new Radius.elliptical(
                       MediaQuery.of(context).size.width, 100.0)),
-            ),
+            ),*/
           ),
           SizedBox(
             height: 40,
@@ -94,8 +115,7 @@ class HomePage extends StatelessWidget {
                   color: Colors.tealAccent,
                   child: ListTile(
                     onTap: () {
-                      Navigator.push(
-                        context,
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => RegularTicket(),
                         ),
@@ -168,5 +188,14 @@ class HomePage extends StatelessWidget {
       }
     });
     return true;
+  }
+
+  Future<String> getSPuserNameValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool userIsLoggedIn = prefs.getBool(IS_LOGIN);
+    if (userIsLoggedIn == true) {
+      return prefs.getString(USER_NAME);
+    }
+    return null;
   }
 }
