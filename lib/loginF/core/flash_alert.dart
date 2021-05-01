@@ -23,11 +23,13 @@ void showFlushbar1(BuildContext context,
               spreadRadius: 0,
               offset: Offset(0, 2))
         ],
-        color: color ?? Colors.red[300],
+        color: color ?? Colors.red[600]
       ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white, fontSize: 16),
+      child: Directionality(textDirection: TextDirection.rtl,
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
       ),
     ),
     duration: Duration(seconds: seconds),

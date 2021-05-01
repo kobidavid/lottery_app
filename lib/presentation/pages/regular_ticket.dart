@@ -94,9 +94,9 @@ class _RegularTicketState extends State<RegularTicket> {
               ticketProvider.transferBoolArrayToInt();
               if( TicketProvider.missing_checkboxes==false){
                 print('ticket is ok');
-                final prefs = await SharedPreferences.getInstance();
-                if ( prefs.getBool(IS_LOGIN) != true){
-                  print(prefs.getBool(IS_LOGIN));
+
+                if ( auth.currentUser==null){
+
                   print("user is not register");
                   Navigator.push(
                     context,

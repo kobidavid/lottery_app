@@ -50,17 +50,8 @@ class LoginPage extends StatelessWidget {
                 ),
 
                     SignInButton(Buttons.Google, text:('Sign in with Google'),onPressed: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      if(prefs.getString(USER_NAME).isNotEmpty){
-                        Provider.of<LoginProvider>(context, listen: false).signInWithGoogle();
-                    }})
-                    /*if (LoginProvider.signInWithGoogle() != null) {
-                      print('Login success! Lets pay');
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => RegularTicket()));
-                    }else{
-                      print('bad');
-                    }
-                    ;*/
+                        Provider.of<LoginProvider>(context, listen: false).signInWithGoogle(context);
+                    })
                   ,
                 SizedBox(
                   height: 20,

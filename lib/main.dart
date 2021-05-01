@@ -10,6 +10,7 @@ import 'package:lottery_app/presentation/state_management/ticket_provider.dart';
 import 'package:lottery_app/services/sp_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'core/service_locator.dart';
 import 'presentation/pages/double_ticket.dart';
 import 'presentation/pages/regular_ticket.dart';
 
@@ -18,18 +19,18 @@ GetIt getIt = GetIt.instance;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  getIt.registerSingleton<UserEntity>(UserEntity(), signalsReady: true);
+  setupLocator();
+  //getIt.registerSingleton<UserEntity>(UserEntity(), signalsReady: true);
 
 
   var x = LoginProvider();
-  await x.init();
+  //await x.init();
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<TicketProvider>(create: (_) => TicketProvider()),
       ChangeNotifierProvider<LoginProvider>(create: (_) => x),
-      ChangeNotifierProvider<RegisterProvider>(
-          create: (_) => RegisterProvider()),
+      ChangeNotifierProvider<TicketProvider>(create: (_) => TicketProvider()),
+      ChangeNotifierProvider<RegisterProvider>(create: (_) => RegisterProvider()),
     ],
     child: App(),
   ));
@@ -52,7 +53,7 @@ class App extends StatelessWidget {
         primarySwatch: Colors.orange,
       ),
       darkTheme:
-          ThemeData(brightness: Brightness.dark, primarySwatch: Colors.red),
+          ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(title: 'לוטו דראעק'),

@@ -5,12 +5,14 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 class RegisterTextField extends StatelessWidget {
   RegisterTextField({
     Key key,
-    @required this.name, this.controller, this.labelName, this.returnErr, this.textDirection,
+    @required this.name, this.lastName,this.controller, this.labelName, this.returnErr, this.textDirection, this.keyboardType
   }) : super(key: key);
 
   final TextEditingController controller;
   final String labelName;
   final String name;
+  final String lastName;
+  final TextInputType keyboardType;
   final String returnErr;
   final TextDirection textDirection;
 
@@ -18,7 +20,7 @@ class RegisterTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return FormBuilderTextField(
       name: name,
-        keyboardType: labelName=="אימייל"?TextInputType.emailAddress:labelName=="טלפון נייד"?TextInputType.phone:labelName=="תעודת זהות"?TextInputType.number:TextInputType.text,
+        keyboardType: keyboardType,
       decoration: InputDecoration(
           labelText: labelName
       ),
@@ -31,7 +33,12 @@ class RegisterTextField extends StatelessWidget {
   }
 
   String _validator(String value) {
-    if (labelName=="שם משתמש") {
+    if (labelName=="שם פרטי") {
+      if (value == null || value.isEmpty) {
+        return returnErr;
+      }
+
+    }else if (labelName=="שם משפחה") {
       if (value==null ||value.isEmpty){
         return returnErr;
       }

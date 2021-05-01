@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottery_app/core/service_locator.dart';
 import 'package:lottery_app/core/shared_preferences_names.dart';
 import 'package:lottery_app/domain/entities/spEntity.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
@@ -26,24 +28,32 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        shadowColor: Colors.white,
+        //shadowColor: Colors.white,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        leading:
-            Consumer<LoginProvider>(builder: (context, loginProvider, child) {
-          if (loginProvider.spLogin ==true) {
-            return CircleAvatar(
-                radius: 9.0,
-                child: Center(
-                    child: Text(loginProvider.spName != null
-                        ? loginProvider.spName
-                        : "NA")));
-          } else {return Text('');}
-          ;
-        }),
 
-        actions: [Icon(Icons.menu)],
-        title: Text(title),
+        leading: CircleAvatar(
+            radius: 9.0,
+            child: Center(
+                child: Text(auth.currentUser==null?"":
+                    locator<UserEntity>().firstName.toString())
+                    )),
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.menu,
+              color: Colors.black,
+            ),
+          )
+        ],
+        title: Text(title,
+            style: GoogleFonts.gabriela(
+                color: Colors.black,
+                fontSize: 44,
+                fontWeight: FontWeight.bold)),
+
         elevation: 0,
         //shape: AnimationController(),
         // shadowColor: Colors.orange,
@@ -72,9 +82,9 @@ class HomePage extends StatelessWidget {
                         color: Colors.blue.shade900,
                         fontWeight: FontWeight.bold),
                   ),
-                  onTap: ()  {
-                    Provider.of<LoginProvider>(context,listen: false).spLogOut();
-
+                  onTap: () {
+                    //Provider.of<LoginProvider>(context,listen: false).spLogOut();
+                    auth.signOut();
                   },
                 ),
                 /*GestureDetector(
