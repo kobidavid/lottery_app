@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottery_app/core/shared_preferences_names.dart';
 import 'package:lottery_app/loginF/presentation/pages/login_page.dart';
 import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
@@ -18,6 +19,7 @@ class RegularTicket extends StatefulWidget {
 
 class _RegularTicketState extends State<RegularTicket> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn=GoogleSignIn();
   // ScrollController is needed to recognized when the user reach to the bottom of the page
   // and than to change the send button position to the middle.
   //var _scrollController = ScrollController();
@@ -68,7 +70,7 @@ class _RegularTicketState extends State<RegularTicket> {
                       builder: (context, ticketProvider, child) {
                     return Column(
                       children: List.generate(
-                        (TicketProvider.currentNumOnRow * 2) + 2,
+                        (TicketProvider.currentNumOnTables * 2) + 2,
                         //num of rows
                         (index) => oneLuckyTable(context, index),
                       ),
@@ -95,7 +97,7 @@ class _RegularTicketState extends State<RegularTicket> {
               if( TicketProvider.missing_checkboxes==false){
                 print('ticket is ok');
 
-                if ( auth.currentUser==null){
+                if ( auth.currentUser==null|| googleSignIn==null){
 
                   print("user is not register");
                   Navigator.push(

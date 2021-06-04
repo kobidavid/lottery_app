@@ -72,6 +72,15 @@ dependencies:
   #For displaying alert dialog for few minutes
   flash: any
   flushbar: ^1.10.4
+
+  #RTL for Hebrew LTR for English
+  auto_direction: ^0.0.5
+
+  flutter_progress_button: '^0.6.4'
+
+  xml: ^5.1.1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

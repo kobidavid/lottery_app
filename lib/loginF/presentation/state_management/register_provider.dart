@@ -9,18 +9,19 @@ import 'package:lottery_app/core/di/di.dart';
 import 'package:lottery_app/core/service_locator.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
 import 'package:lottery_app/loginF/core/flash_alert.dart';
+import 'package:lottery_app/loginF/core/verify_auth_phone_number.dart';
 import 'package:lottery_app/loginF/data/repositories_imp/db_queries_imp.dart';
 import 'package:lottery_app/loginF/domain/repositories/db_queries_interface.dart';
 import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
 import 'package:lottery_app/loginF/presentation/pages/verification_code_page.dart';
+import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:lottery_app/presentation/pages/payment_page.dart';
+import 'package:provider/provider.dart';
 
 class RegisterProvider extends ChangeNotifier {
   bool userAlreadyRegisterInThePast;
 
   final GlobalKey<FormBuilderState> fbKey = GlobalKey<FormBuilderState>();
-
-  //userAlreadyRegisterInThePast=false;
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -29,7 +30,7 @@ class RegisterProvider extends ChangeNotifier {
 
   Future<void> registerUser(context) async {
     if (fbKey.currentState.saveAndValidate()) {
-      if (await dbQueriesImp.checkIfUserExist(context)==true){
+      if (await dbQueriesImp.checkIfUserEmailOrPassExist(context,fbKey.currentState.fields["userEmail"].value.toString().trim(),fbKey.currentState.fields["userPhone"].value.toString().trim())==true){
 
         showFlushbar1(context, text: "המשתמש קיים במערכת");
       }else{
@@ -40,52 +41,37 @@ class RegisterProvider extends ChangeNotifier {
       currentUser.phone = fbKey.currentState.fields['userPhone'].value;
       currentUser.email = fbKey.currentState.fields['userEmail'].value;
 
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+972534427026',
-
-        timeout: Duration(seconds: 60),   // after this timeout the code will be expired
-
-        verificationCompleted: (AuthCredential credential) async {  // callback which gets called once the verification successfully using auto code retrival ,not manually!!!
-          /*UserCredential authResult =
-              await auth.signInWithCredential(credential);
-
-          User user = authResult.user;
-          if (user != null) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => PaymentPage()));
-          }*/
-        },
-
-        verificationFailed: (FirebaseAuthException exception) {   // callback which gets called when the verification failed,
-          print(exception);
-        },
-        codeSent: (String verificationId, int resendToken)  async{      // callback which gets called when the code send successfully to the device,
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => VerificationCodePage(
-                      phoneNumber: currentUser.phone,
-                      verificationId: verificationId)));
-        },
-
-        codeAutoRetrievalTimeout: (String verificationId) {}  ,
-      );}
+      bool isLoginMethod=false;
+      VerifyAuthPhoneNumber verifyAuthPhoneNumber=VerifyAuthPhoneNumber();
+      await verifyAuthPhoneNumber.verifyAuthPhoneNum(currentUser.phone, context,isLoginMethod);}
     }
   }
 
-  signIn(verificationId, smsCode, context) async {
+
+
+  signIn(verificationId, smsCode, context,bool isLoginMethod) async {
     AuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: smsCode);
     UserCredential result = await auth.signInWithCredential(credential);
     User user = result.user;
     if (user != null) {
 
-      dbQueriesImp.registerUser(context);
+      dbQueriesImp.registerUser(context,isLoginMethod);
+      Provider.of<LoginProvider>(context,listen: false).userNameForIcon();
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => PaymentPage()));
     } else {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => RegisterPage()));
     }
+  }
+
+  int charLength=0;
+  String charValue;
+  onChanged(String value) {
+    charValue=value;
+    charLength = value.length;
+
+    notifyListeners();
   }
 }

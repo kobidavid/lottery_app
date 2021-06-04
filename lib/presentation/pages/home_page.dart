@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottery_app/core/service_locator.dart';
 import 'package:lottery_app/core/shared_preferences_names.dart';
 import 'package:lottery_app/domain/entities/spEntity.dart';
 import 'package:lottery_app/domain/entities/user_entity.dart';
+import 'package:lottery_app/loginF/data/repositories_imp/db_queries_imp.dart';
 import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
+import 'package:lottery_app/loginF/presentation/state_management/register_provider.dart';
 import 'package:lottery_app/presentation/pages/regular_ticket.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +19,9 @@ class HomePage extends StatelessWidget {
   final String title;
   final FirebaseAuth auth = FirebaseAuth.instance;
   GetIt getIt = GetIt.instance;
+  GoogleSignIn googleSignIn=GoogleSignIn();
 
+  DBQueriesImp dbQueriesImp=DBQueriesImp();
   //LoginProvider uName=Provider.of<SharedPreferenceName.>(context);
   HomePage({@required this.title});
 
@@ -32,12 +37,12 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
 
-        leading: CircleAvatar(
+        leading:
+        Consumer<LoginProvider>(builder: (BuildContext context,loginProvider,child){
+              return auth.currentUser!=null?CircleAvatar(
             radius: 9.0,
-            child: Center(
-                child: Text(auth.currentUser==null?"":
-                    locator<UserEntity>().firstName.toString())
-                    )),
+            child: Text(loginProvider.uNameForIcon)):Text("");}),
+            //child: Text("kobi")):Text("");}),
 
         actions: [
           Padding(
@@ -83,8 +88,10 @@ class HomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
-                    //Provider.of<LoginProvider>(context,listen: false).spLogOut();
-                    auth.signOut();
+                    Provider.of<LoginProvider>(context,listen: false).logOutUser();
+                    //auth.signOut();
+                    //googleSignIn.disconnect();
+
                   },
                 ),
                 /*GestureDetector(

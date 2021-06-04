@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -22,28 +23,37 @@ void main() async {
   setupLocator();
   //getIt.registerSingleton<UserEntity>(UserEntity(), signalsReady: true);
 
-
   var x = LoginProvider();
-  //await x.init();
+  FirebaseAuth _auth;
+  //if (_auth != null) {
+    await x.userNameForIcon();
+  //}
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<LoginProvider>(create: (_) => x),
       ChangeNotifierProvider<TicketProvider>(create: (_) => TicketProvider()),
-      ChangeNotifierProvider<RegisterProvider>(create: (_) => RegisterProvider()),
+      ChangeNotifierProvider<RegisterProvider>(
+          create: (_) => RegisterProvider()),
     ],
     child: App(),
   ));
 }
 
-class App extends StatelessWidget {
-  Future<void> initState() async {
-    /* SharedPreferences prefs =
-        await SharedPreferences.getInstance();*/
-    //Ticket ticket = Ticket();
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  void initState() {
+    super.initState();
+
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      // do whatever you want based on the firebaseUser state
+    });
   }
 
-  //final SharedPreferenceService sharedPreferenceService = SharedPreferenceService();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -5,26 +5,22 @@ import 'package:lottery_app/domain/usecases/marked_num_of_desired_rows.dart';
 
 class TicketProvider extends ChangeNotifier {
   Ticket ticket = Ticket();
-
-  static String type;
+  static int currentNumOnTables = 6;
+   int get numOfTables=> (currentNumOnTables+1)*2;
 
   List<bool> get getMarkNumOfRows => Ticket.markNumOfRows;
 
   //List<List<List<bool>>> get getListOfAllTables => listOfAllTables;
 
   List<List<List<bool>>> get getAllTablesNumbers => Ticket.listOfAllTables;
-  static int currentNumOnRow = 6;
 
   static bool buttonAtTheMiddle=false;
-
   static bool missing_checkboxes=true;
   
-  void desireNumOfRows(int numOfRow) {
+  void setNumOfTables(int numOfRow) {
     ticket.setMarkNumOfRows(numOfRow);
-    ticket.setMarkNumOfRows(currentNumOnRow);
-
-    currentNumOnRow = numOfRow;
-    //tablesNumbers(numOfRow);
+    ticket.setMarkNumOfRows(currentNumOnTables);
+    currentNumOnTables = numOfRow;
     notifyListeners();
   }
 
@@ -59,15 +55,20 @@ class TicketProvider extends ChangeNotifier {
   static int ticketIsOkCounter = 0;
   static int ticketIsOkCounterStrongNum = 0;
 
+
+  static List<List<List<int>>> myIntList;
+  static List<List<List<int>>> myIntStrongList;
 // Creating 2 int list - for regular num and strong num
   void transferBoolArrayToInt() {
-    List<List<List<int>>> myIntList =
+
+    //List<List<List<int>>> myIntList =
+    myIntList =
         List.generate(1, (index) => List.generate(14, (i) => []));
-    List<List<List<int>>> myIntStrongList =
+    myIntStrongList =
         List.generate(1, (index) => List.generate(14, (i) => []));
 
     //prepare a strong list
-    for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
+    for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       for (int j = 0; j < 7; j++) {
         if (Ticket.listOfAllTablesStrongNum[0][i][j] == true) {  //
           myIntStrongList[0][i].add(j + 1);
@@ -76,7 +77,7 @@ class TicketProvider extends ChangeNotifier {
     }
 
     //prepare a list of regular number
-    for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
+    for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       for (int j = 0; j < 37; j++) {
         if (Ticket.listOfAllTables[0][i][j] == true) {
           if (myIntList[0][i].length == 6) {
@@ -89,14 +90,14 @@ class TicketProvider extends ChangeNotifier {
       }
     }
 
-    for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
+    for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       if (myIntList[0][i].length != 6) {
         ticketIsOkCounter++;
       }
 
     }
 
-    for (int i = 0; i < ((currentNumOnRow * 2) + 2); i++) {
+    for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       if (myIntStrongList[0][i].length != 1) {
         ticketIsOkCounterStrongNum++;
       }

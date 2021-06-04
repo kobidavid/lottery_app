@@ -5,7 +5,10 @@ import 'dart:io' as io;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:lottery_app/core/shared_preferences_names.dart';
+import 'package:lottery_app/core/widget/register_textfield_widget.dart';
 import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
@@ -17,80 +20,141 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
+
+  TextEditingController textEditingController= TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Scaffold(appBar: AppBar(),
+      child: Scaffold(
+        appBar: AppBar(),
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.only(left: 50, right: 50, top: 30, bottom: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text(
-                      'היי, כיף לראות אותך שוב',
-                      style: TextStyle(fontSize: 17),
-                    )),
-                SizedBox(
-                  height: 30,
-                ),
-                Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text(
-                      'נא התחבר',
-                      style: TextStyle(fontSize: 30),
-                    )),
-                SizedBox(
-                  height: 20,
-                ),
+            //padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/7, right: MediaQuery.of(context).size.width/7, top: 30, bottom: 30),
+            margin: EdgeInsets.all(40),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Text(
+                        'היי, כיף לראות אותך שוב',
+                        style: TextStyle(fontSize: 17),
+                      )),
 
-                    SignInButton(Buttons.Google, text:('Sign in with Google'),onPressed: () async {
-                        Provider.of<LoginProvider>(context, listen: false).signInWithGoogle(context);
-                    })
-                  ,
-                SizedBox(
-                  height: 20,
-                ),
-                FacebookSignInButton(
-                  onPressed: () {
-                    //signInWithFacebook();
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                AppleSignInButton(
-                  onPressed: () async {
-                    final oauthCred = await _createAppleOAuthCred();
-                    await FirebaseAuth.instance.signInWithCredential(oauthCred);
-                  },
-                  textStyle: TextStyle(fontSize: 20), // default: false
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: GestureDetector(
-                    child: Container(
-                      child: Text('לא רשום? לדף הרישום'),
+                  Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Text(
+                        'נא התחבר',
+                        style: TextStyle(fontSize: 30),
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  FormBuilder(
+                    key: Provider.of<LoginProvider>(context, listen: false)
+                        .fbKey,
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: RegisterTextField(
+                          controller: textEditingController,
+                          name: "login_with_phone",
+                          textDirection: TextDirection.ltr,
+                          keyboardType: TextInputType.phone,
+                          labelName: "התחבר באמצעות מספר טלפון",
+                          icon: Icon(Icons.phone),
+                          charLength: 0),
                     ),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterPage(),
-                        ),
-                      );
+                  ),
+                  Consumer<LoginProvider>(
+                      builder: (context, loginProviderPhoneNumber, child) {
+                    return loginProviderPhoneNumber.charLength > 8
+                        ? GestureDetector(
+                            onTap: () {
+                              Provider.of<LoginProvider>(context, listen: false)
+                                  .loginUserByPhoneNum(context,
+                                  loginProviderPhoneNumber.charValue.toString()
+                                      .trim());
+                            },
+                            child: Align(
+                                alignment: Alignment.center,
+                                child: Text("שליחת קוד")),
+                          )
+                        : Text("");
+                  }),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Row(children: <Widget>[
+                    Expanded(
+                      child: new Container(
+                          margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                          child: Divider(
+                            color: Colors.black,
+                            height: 36,
+                          )),
+                    ),
+                    Text("או"),
+                    Expanded(
+                      child: new Container(
+                          margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                          child: Divider(
+                            color: Colors.black,
+                            height: 36,
+                          )),
+                    ),
+                  ]),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SignInButton(
+                    Buttons.Google,
+                    onPressed: () {
+                      Provider.of<LoginProvider>(context, listen: false)
+                          .signInWithGoogle(context);
                     },
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 20,
+                  ),
+                  FacebookSignInButton(
+                    onPressed: () {
+                      //signInWithFacebook();
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  AppleSignInButton(
+                    onPressed: () async {
+                      final oauthCred = await _createAppleOAuthCred();
+                      await FirebaseAuth.instance
+                          .signInWithCredential(oauthCred);
+                    },
+                    textStyle: TextStyle(fontSize: 20), // default: false
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: GestureDetector(
+                      child: Container(
+                        child: Text('לא רשום? לדף הרישום'),
+                      ),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -98,8 +162,6 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
-
 
 String _createNonce(int length) {
   final random = Random();

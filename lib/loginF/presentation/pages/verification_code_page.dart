@@ -8,12 +8,14 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:lottery_app/loginF/presentation/state_management/register_provider.dart';
 
 class VerificationCodePage extends StatefulWidget {
+
   String phoneNumber;
   String verificationId;
+  FirebaseAuth uid;
+  bool isLoginMethod;
 
-  VerificationCodePage({
-    this.phoneNumber,this.verificationId
-  });
+  VerificationCodePage({this.phoneNumber,this.verificationId,this.uid,this.isLoginMethod});
+
   @override
   _VerificationCodePageState createState() => _VerificationCodePageState();
 
@@ -21,9 +23,8 @@ class VerificationCodePage extends StatefulWidget {
 
 class _VerificationCodePageState extends State<VerificationCodePage> {
 
-  bool _onEditing = true;
-  String _code;
   TextEditingController inputCode=TextEditingController();
+
   bool hasError = false;
   String currentText = "";
   StreamController<ErrorAnimationType> errorController;
@@ -43,35 +44,6 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
                 SizedBox(height: 20,),
                 Center(child: Text('נא להזין את הקוד שנשלח אליכם',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),)),
                 Center(child: Text( widget.phoneNumber+' למספר',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),)),
-            /*VerificationCode(
-              textStyle: TextStyle(fontSize: 13.0, color: Colors.red[900]),
-              underlineColor: Colors.amber,
-              keyboardType: TextInputType.number,
-
-              length: 4,
-              // clearAll is NOT required, you can delete it
-              // takes any widget, so you can implement your design
-              clearAll: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Text(
-                  'clear all',
-                  style: TextStyle(
-                      fontSize: 14.0,
-                      decoration: TextDecoration.underline,
-                      color: Colors.blue[700]),
-                ),
-              ),onEditing: (bool value) {
-              setState(() {
-                _onEditing = value;
-              });
-            },
-              onCompleted: (String value) {
-                setState(() {
-                  _code = value;
-                });
-                RegisterProvider().signIn(widget.verificationId,_code,context);
-
-              },)*/
               PinCodeTextField(
                 appContext: context,
                 pastedTextStyle: TextStyle(
@@ -117,9 +89,6 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
                 onCompleted: (v) {
                   print("Completed");
                 },
-                // onTap: () {
-                //   print("Pressed");
-                // },
                 onChanged: (value) {
                   print(value);
                   setState(() {
@@ -139,7 +108,7 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
                   controller: inputCode,
 
           ),ElevatedButton(child:Text('אשר'),onPressed: (){
-                  RegisterProvider().signIn(widget.verificationId,inputCode.text,context);
+                  RegisterProvider().signIn(widget.verificationId,inputCode.text,context,widget.isLoginMethod);
                 }),
 
                 //Center(child: Text(_code!=null?_code:"",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),)),

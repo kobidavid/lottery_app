@@ -105,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             keyboardType:TextInputType.phone,
                             labelName: "טלפון נייד",
                             returnErr: "נא הכנס טלפון נייד",
-                            textDirection: TextDirection.rtl)),
+                            textDirection: TextDirection.ltr)),
                     Directionality(
                         textDirection: TextDirection.rtl,
                         child: RegisterTextField(
@@ -118,9 +118,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                       height: 20,
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                         child: Text('רישום'),
-                        color: Colors.red,
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.orange)),
                         onPressed: () {
                         Provider.of<RegisterProvider>(context,listen: false).registerUser(context);
                         }),
