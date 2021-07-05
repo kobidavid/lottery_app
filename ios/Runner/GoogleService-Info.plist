@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>84159679458-lf4nh23noabbbnuhj6o0qie147alssrp.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.84159679458-lf4nh23noabbbnuhj6o0qie147alssrp</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>84159679458-jaahm2olpo3nqi15bt6qtg7ovn0e1rls.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCUFmv7l_tgFS2baJ29yiRbiZ3e-GCu0Cg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>84159679458</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kobi.lotteryApp</string>
+	<key>PROJECT_ID</key>
+	<string>kloteryapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kloteryapp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:84159679458:ios:3742079eec87de142b47bb</string>
+	<key>DATABASE_URL</key>
+	<string>https://kloteryapp.firebaseio.com</string>
+</dict>
+</plist>
