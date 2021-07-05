@@ -54,7 +54,7 @@ class _RegularTicketState extends State<RegularTicket> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xff0F283F), Color(0xffA2D0FB)],
+            colors: [Color(0xff0F283F), Color(0xffA2D0FB)],
             ),
           ),
           child: DesiredNumOfTables(),
@@ -63,20 +63,22 @@ class _RegularTicketState extends State<RegularTicket> {
         Expanded(
           child: Stack(
             children: <Widget>[
-              ListView(
-                //controller: _scrollController,
-                children: <Widget>[
-                  Consumer<TicketProvider>(
-                      builder: (context, ticketProvider, child) {
-                    return Column(
-                      children: List.generate(
-                        (TicketProvider.currentNumOnTables * 2) + 2,
-                        //num of rows
-                        (index) => oneLuckyTable(context, index),
-                      ),
-                    );
-                  })
-                ],
+              InteractiveViewer(
+                child: ListView(
+                  //controller: _scrollController,
+                  children: <Widget>[
+                    Consumer<TicketProvider>(
+                        builder: (context, ticketProvider, child) {
+                      return Column(
+                        children: List.generate(
+                          (TicketProvider.currentNumOnTables * 2) + 2,
+                          //num of rows
+                          (index) => oneLuckyTable(context, index),
+                        ),
+                      );
+                    })
+                  ],
+                ),
               ),
             ],
           ),

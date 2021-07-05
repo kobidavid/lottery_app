@@ -15,7 +15,7 @@ import 'package:lottery_app/loginF/presentation/state_management/register_provid
 import 'package:lottery_app/presentation/pages/payment_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flash/flash.dart';
+
 
 import '../../../main.dart';
 
@@ -157,27 +157,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _showBasicsFlash({
-    Duration duration,
-    flashStyle = FlashStyle.floating,
-  }) {
-    showFlash(
-      context: context,
-      duration: duration,
-      builder: (context, controller) {
-        return Flash(
-          controller: controller,
-          style: flashStyle,
-          boxShadows: kElevationToShadow[4],
-          horizontalDismissDirection: HorizontalDismissDirection.horizontal,
-          child: FlashBar(
-            message: Text('This is a basic flash'),
-          ),
-        );
-      },
-    );
+
   }
-}
+
 
 /*
 addToSharedPrefAsRegister() async {

@@ -111,7 +111,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
                             color: Colors.black),
-                        children: const <TextSpan>[
+                        children: <TextSpan>[
                           TextSpan(
                               text: 'אופק',
                               style: TextStyle(

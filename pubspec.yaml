@@ -70,7 +70,7 @@ dependencies:
   pin_code_fields: ^7.0.0
 
   #For displaying alert dialog for few minutes
-  flash: any
+  #flash: any
   flushbar: ^1.10.4
 
   #RTL for Hebrew LTR for English
