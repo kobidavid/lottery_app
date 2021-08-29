@@ -17,7 +17,7 @@ import 'presentation/pages/regular_ticket.dart';
 
 GetIt getIt = GetIt.instance;
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   setupLocator();

@@ -11,6 +11,7 @@ import 'package:lottery_app/presentation/state_management/ticket_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/widget/custom_widgets.dart'; //contains all custom widgets under /lib/presentation/widget
+import 'package:lottery_app/loginF/core/flash_alert.dart';
 
 class RegularTicket extends StatefulWidget {
   @override
@@ -121,6 +122,7 @@ class _RegularTicketState extends State<RegularTicket> {
                 }
               }else{
                 print('Ticket hasnt been filed completly ');
+                showFlushbar1(context, text: "הטבלאות לא מלאות, נא בדיקתך");
               }
               });
         })

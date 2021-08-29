@@ -1,0 +1,37 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/storage": "^5.13.1",
+    "axios": "^0.21.1",
+    "file-type": "^16.5.3",
+    "firebase-admin": "^9.11.0",
+    "firebase-functions": "^3.14.1",
+    "got": "^11.8.2",
+    "pdfkit": "^0.12.1",
+    "pdfmake": "^0.2.0",
+    "temp": "^0.9.4",
+    "tmp": "^0.2.1"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.15.0",
+    "babel-eslint": "^10.1.0",
+    "check-dependencies": "^1.1.0",
+    "eslint": "^7.31.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^0.2.0"
+  },
+  "private": true
+}
