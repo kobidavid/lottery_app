@@ -7,21 +7,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:lottery_app/core/shared_preferences_names.dart';
 import 'package:lottery_app/core/widget/register_textfield_widget.dart';
 import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flash/flash.dart';
 //import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 class LoginPage extends StatelessWidget {
-
-  TextEditingController textEditingController= TextEditingController();
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,6 @@ class LoginPage extends StatelessWidget {
                         'היי, כיף לראות אותך שוב',
                         style: TextStyle(fontSize: 17),
                       )),
-
                   Directionality(
                       textDirection: TextDirection.rtl,
                       child: Text(
@@ -58,13 +53,15 @@ class LoginPage extends StatelessWidget {
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: RegisterTextField(
-                          controller: textEditingController,
-                          name: "login_with_phone",
-                          textDirection: TextDirection.ltr,
-                          keyboardType: TextInputType.phone,
-                          labelName: "התחבר באמצעות מספר טלפון",
-                          icon: Icon(Icons.phone),
-                          charLength: 0),
+                        controller: textEditingController,
+                        name: "login_with_phone",
+                        textDirection: TextDirection.ltr,
+                        keyboardType: TextInputType.phone,
+                        labelName: "התחבר באמצעות מספר טלפון",
+                        icon: Icon(Icons.phone),
+                        charLength: 0,
+                        returnErr: '',
+                      ),
                     ),
                   ),
                   Consumer<LoginProvider>(
@@ -73,9 +70,11 @@ class LoginPage extends StatelessWidget {
                         ? GestureDetector(
                             onTap: () {
                               Provider.of<LoginProvider>(context, listen: false)
-                                  .loginUserByPhoneNum(context,
-                                  loginProviderPhoneNumber.charValue.toString()
-                                      .trim());
+                                  .loginUserByPhoneNum(
+                                      context,
+                                      loginProviderPhoneNumber.charValue
+                                          .toString()
+                                          .trim());
                             },
                             child: Align(
                                 alignment: Alignment.center,
@@ -89,7 +88,8 @@ class LoginPage extends StatelessWidget {
                   Row(children: <Widget>[
                     Expanded(
                       child: new Container(
-                          margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                          margin:
+                              const EdgeInsets.only(left: 10.0, right: 20.0),
                           child: Divider(
                             color: Colors.black,
                             height: 36,
@@ -98,7 +98,8 @@ class LoginPage extends StatelessWidget {
                     Text("או"),
                     Expanded(
                       child: new Container(
-                          margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                          margin:
+                              const EdgeInsets.only(left: 20.0, right: 10.0),
                           child: Divider(
                             color: Colors.black,
                             height: 36,
@@ -118,22 +119,22 @@ class LoginPage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  FacebookSignInButton(
+                  /*  FacebookSignInButton(
                     onPressed: () {
                       //signInWithFacebook();
                     },
-                  ),
+                  ), */
                   SizedBox(
                     height: 20,
                   ),
-                  AppleSignInButton(
+                  /* AppleSignInButton(
                     onPressed: () async {
                       final oauthCred = await _createAppleOAuthCred();
                       await FirebaseAuth.instance
                           .signInWithCredential(oauthCred);
                     },
                     textStyle: TextStyle(fontSize: 20), // default: false
-                  ),
+                  ), */
                   SizedBox(
                     height: 20,
                   ),
@@ -163,10 +164,10 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-String _createNonce(int length) {
+String? _createNonce(int length) {
   final random = Random();
   final charCodes = List<int>.generate(length, (_) {
-    int codeUnit;
+    late int codeUnit;
 
     switch (random.nextInt(3)) {
       case 0:
@@ -194,7 +195,7 @@ Future<OAuthCredential> _createAppleOAuthCred() async {
             AppleIDAuthorizationScopes.email,
             AppleIDAuthorizationScopes.fullName,
           ],
-          nonce: sha256.convert(utf8.encode(nonce)).toString(),
+          nonce: sha256.convert(utf8.encode(nonce!)).toString(),
         )
       : await SignInWithApple.getAppleIDCredential(
           scopes: [
@@ -207,7 +208,7 @@ Future<OAuthCredential> _createAppleOAuthCred() async {
             clientId:
                 '84159679458-lf4nh23noabbbnuhj6o0qie147alssrp.apps.googleusercontent.com',
           ),
-          nonce: sha256.convert(utf8.encode(nonce)).toString(),
+          nonce: sha256.convert(utf8.encode(nonce!)).toString(),
         );
 
   return new OAuthCredential(

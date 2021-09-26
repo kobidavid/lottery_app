@@ -1,12 +1,12 @@
-import 'package:flushbar/flushbar.dart';
+/* import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
-Flushbar flushbar;
+late Flushbar flushbar;
 
 void showFlushbar1(BuildContext context,
-    {String text,
+    {String? text,
     int seconds = 3,
-    Color color,
+    Color? color,
     FlushbarPosition flushbarPosition = FlushbarPosition.BOTTOM}) {
   if (flushbar != null) {
     flushbar.dismiss();
@@ -27,7 +27,7 @@ void showFlushbar1(BuildContext context,
       ),
       child: Directionality(textDirection: TextDirection.rtl,
         child: Text(
-          text,
+          text!,
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -42,4 +42,4 @@ void showFlushbar1(BuildContext context,
     reverseAnimationCurve: Curves.decelerate,
     forwardAnimationCurve: Curves.decelerate,
   )..show(context);
-}
+} */

@@ -19,7 +19,7 @@ import 'package:lottery_app/presentation/pages/payment_page.dart';
 import 'package:provider/provider.dart';
 
 class RegisterProvider extends ChangeNotifier {
-  bool userAlreadyRegisterInThePast;
+  late bool userAlreadyRegisterInThePast;
 
   final GlobalKey<FormBuilderState> fbKey = GlobalKey<FormBuilderState>();
 
@@ -29,47 +29,63 @@ class RegisterProvider extends ChangeNotifier {
   DBQueriesImp dbQueriesImp = DBQueriesImp();
 
   Future<void> registerUser(context) async {
-    if (fbKey.currentState.saveAndValidate()) {
-      if (await dbQueriesImp.checkIfUserEmailOrPassExist(context,fbKey.currentState.fields["userEmail"].value.toString().trim(),fbKey.currentState.fields["userPhone"].value.toString().trim())==true){
+    if (fbKey.currentState!.saveAndValidate()) {
+      if (await dbQueriesImp.checkIfUserEmailOrPassExist(
+              context,
+              fbKey.currentState!.fields["userEmail"]!.value.toString().trim(),
+              fbKey.currentState!.fields["userPhone"]!.value
+                  .toString()
+                  .trim()) ==
+          true) {
+        AlertDialog(
+            title: Text('Flash'),
+            content: Text(
+                '⚡️A highly customizable, powerful and easy-to-use alerting library for Flutter.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('YES'),
+              )
+            ]);
+        //showFlushbar1(context, text: "המשתמש קיים במערכת");
+      } else {
+        var currentUser = locator<UserEntity>();
+        currentUser.firstName =
+            fbKey.currentState!.fields['userFirstName']!.value;
+        currentUser.lastName =
+            fbKey.currentState!.fields['userLastName']!.value;
+        currentUser.id = fbKey.currentState!.fields['userId']!.value;
+        currentUser.phone = fbKey.currentState!.fields['userPhone']!.value;
+        currentUser.email = fbKey.currentState!.fields['userEmail']!.value;
 
-        showFlushbar1(context, text: "המשתמש קיים במערכת");
-      }else{
-      var currentUser = locator<UserEntity>();
-      currentUser.firstName = fbKey.currentState.fields['userFirstName'].value;
-      currentUser.lastName = fbKey.currentState.fields['userLastName'].value;
-      currentUser.id = fbKey.currentState.fields['userId'].value;
-      currentUser.phone = fbKey.currentState.fields['userPhone'].value;
-      currentUser.email = fbKey.currentState.fields['userEmail'].value;
-
-      bool isLoginMethod=false;
-      VerifyAuthPhoneNumber verifyAuthPhoneNumber=VerifyAuthPhoneNumber();
-      await verifyAuthPhoneNumber.verifyAuthPhoneNum(currentUser.phone, context,isLoginMethod);}
+        bool isLoginMethod = false;
+        VerifyAuthPhoneNumber verifyAuthPhoneNumber = VerifyAuthPhoneNumber();
+        await verifyAuthPhoneNumber.verifyAuthPhoneNum(
+            currentUser.getPhone, context, isLoginMethod);
+      }
     }
   }
 
-
-
-  signIn(verificationId, smsCode, context,bool isLoginMethod) async {
-    AuthCredential credential = PhoneAuthProvider.credential(
+  signIn(verificationId, smsCode, context, bool isLoginMethod) async {
+    var credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: smsCode);
-    UserCredential result = await auth.signInWithCredential(credential);
-    User user = result.user;
+    UserCredential? result = await auth.signInWithCredential(credential);
+    User? user = result.user;
     if (user != null) {
-
-      dbQueriesImp.registerUser(context,isLoginMethod);
-      Provider.of<LoginProvider>(context,listen: false).userNameForIcon();
+      dbQueriesImp.registerUser(context, isLoginMethod);
+      Provider.of<LoginProvider>(context, listen: false).userNameForIcon();
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => PaymentPage()));
     } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => RegisterPage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => RegisterPage()));
     }
   }
 
-  int charLength=0;
-  String charValue;
+  int charLength = 0;
+  late String charValue;
   onChanged(String value) {
-    charValue=value;
+    charValue = value;
     charLength = value.length;
 
     notifyListeners();

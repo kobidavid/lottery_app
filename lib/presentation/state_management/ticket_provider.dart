@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lottery_app/data/firestore_service.dart';
 import 'package:lottery_app/domain/entities/ticket.dart';
-import 'package:lottery_app/domain/usecases/marked_num_of_desired_rows.dart';
 
 class TicketProvider extends ChangeNotifier {
-  Ticket ticket = Ticket();
+  late Ticket ticket = Ticket();
   static int currentNumOnTables = 6;
-   int get numOfTables=> (currentNumOnTables+1)*2;
+  int get numOfTables => (currentNumOnTables + 1) * 2;
 
   List<bool> get getMarkNumOfRows => Ticket.markNumOfRows;
 
@@ -14,9 +12,9 @@ class TicketProvider extends ChangeNotifier {
 
   List<List<List<bool>>> get getAllTablesNumbers => Ticket.listOfAllTables;
 
-  static bool buttonAtTheMiddle=false;
-  static bool missing_checkboxes=true;
-  
+  static bool buttonAtTheMiddle = false;
+  static bool missing_checkboxes = true;
+
   void setNumOfTables(int numOfRow) {
     ticket.setMarkNumOfRows(numOfRow);
     ticket.setMarkNumOfRows(currentNumOnTables);
@@ -52,25 +50,23 @@ class TicketProvider extends ChangeNotifier {
     ticket.randomRow(rowNum);
     notifyListeners();
   }
+
   static int ticketIsOkCounter = 0;
   static int ticketIsOkCounterStrongNum = 0;
 
-
-  static List<List<List<int>>> myIntList;
-  static List<List<List<int>>> myIntStrongList;
+  static late List<List<List<int?>>> myIntList;
+  static late List<List<List<int?>>> myIntStrongList;
 // Creating 2 int list - for regular num and strong num
   void transferBoolArrayToInt() {
-
     //List<List<List<int>>> myIntList =
-    myIntList =
-        List.generate(1, (index) => List.generate(14, (i) => []));
-    myIntStrongList =
-        List.generate(1, (index) => List.generate(14, (i) => []));
+    myIntList = List.generate(1, (index) => List.generate(14, (i) => []));
+    myIntStrongList = List.generate(1, (index) => List.generate(14, (i) => []));
 
     //prepare a strong list
     for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       for (int j = 0; j < 7; j++) {
-        if (Ticket.listOfAllTablesStrongNum[0][i][j] == true) {  //
+        if (Ticket.listOfAllTablesStrongNum[0][i][j] == true) {
+          //
           myIntStrongList[0][i].add(j + 1);
         } else {}
       }
@@ -94,36 +90,33 @@ class TicketProvider extends ChangeNotifier {
       if (myIntList[0][i].length != 6) {
         ticketIsOkCounter++;
       }
-
     }
 
     for (int i = 0; i < ((currentNumOnTables * 2) + 2); i++) {
       if (myIntStrongList[0][i].length != 1) {
         ticketIsOkCounterStrongNum++;
       }
-
     }
-    if(ticketIsOkCounter==0 &&ticketIsOkCounterStrongNum==0){
-      ticketIsOkCounter = 0; ticketIsOkCounterStrongNum = 0;
-      missing_checkboxes=false;
+    if (ticketIsOkCounter == 0 && ticketIsOkCounterStrongNum == 0) {
+      ticketIsOkCounter = 0;
+      ticketIsOkCounterStrongNum = 0;
+      missing_checkboxes = false;
       //FirestoreService firestoreService=FirestoreService();
       //firestoreService.addUser(myIntList,myIntStrongList,currentNumOnRow);
 
-    }
-    else{
+    } else {
       ticketIsOkCounter = 0;
       ticketIsOkCounterStrongNum = 0;
       //return false;
     }
   }
 
-  positionOfSendButton(String buttonPosition){
-     if (buttonPosition=="center"){
-       buttonAtTheMiddle=true;
-     }
-     else{
-       buttonAtTheMiddle=false;
-     }
-     notifyListeners();
+  positionOfSendButton(String buttonPosition) {
+    if (buttonPosition == "center") {
+      buttonAtTheMiddle = true;
+    } else {
+      buttonAtTheMiddle = false;
+    }
+    notifyListeners();
   }
 }

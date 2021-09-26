@@ -30,9 +30,9 @@ class DBQueriesImp extends DBQueriesInterface {
   }
 
   Future<bool> checkIfEmailExist(context) async {
-    final snapShot = await users.doc(auth.currentUser.email).get();
+    final snapShot = await users.doc(auth.currentUser!.email).get();
 
-    if (snapShot == null || !snapShot.exists) {
+    if (!snapShot.exists) {
       return false;
     } else {
       return true;
@@ -63,37 +63,39 @@ class DBQueriesImp extends DBQueriesInterface {
 
 
   }*/
-  Future<String> returnUserNameInFireStore() async {
+  Future<String?> returnUserNameInFireStore() async {
     if (auth.currentUser != null) {
-      var data = await users.where(
-          "user_email", isEqualTo: auth.currentUser.email).get();
+      var data = await users
+          .where("user_email", isEqualTo: auth.currentUser!.email)
+          .get();
       if (data.size > 0) {
         return (data.docs.first["first_name"]);
       } else {
-        var data = await users.where(
-            "user_phone", isEqualTo: auth.currentUser.phoneNumber).get();
+        var data = await users
+            .where("user_phone", isEqualTo: auth.currentUser!.phoneNumber)
+            .get();
         if (data.size > 0) {
           return (data.docs.first["first_name"]);
         }
       }
     }
   }
+
   Future<bool> checkIfPhoneExist(context, String phoneNumber) async {
     //users.where("user_phone", isEqualTo: phoneNumber).snapshots().listen((event) {return event.docs[0];});
     var data = await users.where("user_phone", isEqualTo: phoneNumber).get();
     return data.docs.length > 0;
   }
 
-  Future<void> registerUser(context,bool isLoginMethod) async {
+  Future<void> registerUser(context, bool isLoginMethod) async {
     var currentUer = locator<UserEntity>();
     print(currentUer.lastName);
-    final snapShot = await users.doc(auth.currentUser.uid).get();
+    final snapShot = await users.doc(auth.currentUser!.uid).get();
 
     if (snapShot == null || !snapShot.exists) {
       await _saveOnFirestore(context);
-
-    } else if(isLoginMethod==false){
-      showFlushbar1(context, text: "המשתמש קיים במערכת");
+    } else if (isLoginMethod == false) {
+      //showFlushbar1(context, text: "המשתמש קיים במערכת");
     }
   }
 
@@ -102,7 +104,7 @@ class DBQueriesImp extends DBQueriesInterface {
 
     // Call the user's CollectionReference to add a new user
     users
-        .doc(auth.currentUser.uid)
+        .doc(auth.currentUser!.uid)
         .set({
           'first_name': currentUser.firstName,
           'last_name': currentUser.lastName,
@@ -122,21 +124,19 @@ class DBQueriesImp extends DBQueriesInterface {
         catchError((error) => print("Failed to add user: $error"));
   }
 
-
-
-
-  Future<void> findUserDoc(List myIntList,List myIntStrongList,numOfRows,int price) async {
-
-
+  Future<void> findUserDoc(List<List<List<int?>>> myIntList,
+      List<List<List<int?>>> myIntStrongList, numOfRows, int? price) async {
     // Call the user's CollectionReference to add a new user
-    var dataEmail= await users.where("user_email",isEqualTo: currentUser.email).get();
-String userDocId=dataEmail.docs.first.id;
-   //return userDocId;
-    FirestoreService firestoreService=FirestoreService();
-    firestoreService.addUser(myIntList, myIntStrongList, numOfRows,userDocId,price);
-     users.doc(userDocId).update({
-      'aaa':TicketProvider.myIntStrongList[0][0][0]
-    /*  'last_name': currentUer.lastName,
+    var dataEmail =
+        await users.where("user_email", isEqualTo: currentUser.email).get();
+    String userDocId = dataEmail.docs.first.id;
+    //return userDocId;
+    FirestoreService firestoreService = FirestoreService();
+    firestoreService.addUser(
+        myIntList, myIntStrongList, numOfRows, userDocId, price);
+    users.doc(userDocId).update({
+      'aaa': TicketProvider.myIntStrongList[0][0][0]
+      /*  'last_name': currentUer.lastName,
       'user_email': currentUer.email,
       'user_phone': currentUer.phone,
       'user_id': currentUer.id
@@ -152,8 +152,6 @@ String userDocId=dataEmail.docs.first.id;
     //then((value) => _prefs.setString(USER_EMAIL, currentUser.email)).
     catchError((error) => print("Failed to add user: $error"));
   }*/
-
-});}}
-
-
-
+    });
+  }
+}

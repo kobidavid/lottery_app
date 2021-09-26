@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-
-
 class DoubleTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,10 +10,12 @@ class DoubleTicket extends StatelessWidget {
         body: Container(
           child: ListView(children: [
             RaisedButton(
-              child: Text('Click'),
-              onPressed: () {Navigator.pushNamed(context, '/');}
+                child: Text('Click'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/');
+                }
 
-             /* async {
+                /* async {
               var futureValue=await myTimedOutFuture().timeout(Duration(seconds: 8),onTimeout: (){
                 print(' this future is timed out');
                 return 'this is my timeout value';
@@ -31,7 +31,7 @@ class DoubleTicket extends StatelessWidget {
                 });
                 print('Future now here');*/
               },*/
-            ),
+                ),
             Container(
               height: 200,
               child: ListView(
@@ -199,30 +199,7 @@ class DoubleTicket extends StatelessWidget {
   }
 }
 
-
-Future<bool> downloadFile(int id, int duration) async {
-  await Future.delayed(Duration(seconds: duration));
-  print('download completed for $id');
-}
-
-Future multipleDonloads ()async{
-  var futures=List<Future>();
-
-  for(int i=0;i<10;i++){
-    futures.add(downloadFile(i, Random(i).nextInt(10)));
-  }
-  await Future.wait(futures);
-  print('done');
-}
-
-
-
-
-
-
-
-
-Future<String>myTimedOutFuture()async{
-await Future.delayed(Duration(seconds: 10));
-return ('Future completed');
+Future<String> myTimedOutFuture() async {
+  await Future.delayed(Duration(seconds: 10));
+  return ('Future completed');
 }

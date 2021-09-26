@@ -20,12 +20,18 @@ class RegularTicket extends StatefulWidget {
 
 class _RegularTicketState extends State<RegularTicket> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final GoogleSignIn googleSignIn=GoogleSignIn();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   // ScrollController is needed to recognized when the user reach to the bottom of the page
   // and than to change the send button position to the middle.
   //var _scrollController = ScrollController();
 
-/*
+  final snackBar = SnackBar(
+    content: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Text('אנא דאג למלא את כל הטופס במלואו!')),
+    duration: Duration(seconds: 0, milliseconds: 1000),
+  );
+  /*
   @override
   void initState() {
     super.initState();
@@ -55,7 +61,7 @@ class _RegularTicketState extends State<RegularTicket> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-            colors: [Color(0xff0F283F), Color(0xffA2D0FB)],
+              colors: [Color(0xff0F283F), Color(0xffA2D0FB)],
             ),
           ),
           child: DesiredNumOfTables(),
@@ -86,44 +92,42 @@ class _RegularTicketState extends State<RegularTicket> {
         ),
         Consumer<TicketProvider>(builder: (context, ticketProvider, child) {
           return GestureDetector(
-            child: Container(
-              alignment: Alignment.center,
-              height: 60,
-              color: Colors.blue,
-              child: Text('שליחה',
-                  style: TextStyle(fontSize: 50, color: Colors.white)),
-            ),
-            onTap: () async {
-              //addToSharedPrefAsRegister();
+              child: Container(
+                alignment: Alignment.center,
+                height: 60,
+                color: Colors.blue,
+                child: Text('שליחה',
+                    style: TextStyle(fontSize: 50, color: Colors.white)),
+              ),
+              onTap: () async {
+                //addToSharedPrefAsRegister();
 
-              ticketProvider.transferBoolArrayToInt();
-              if( TicketProvider.missing_checkboxes==false){
-                print('ticket is ok');
+                ticketProvider.transferBoolArrayToInt();
+                if (TicketProvider.missing_checkboxes == false) {
+                  print('ticket is ok');
 
-                if ( auth.currentUser==null|| googleSignIn==null){
-
-                  print("user is not register");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RegisterPage(),
-                    ),
-                  );
-                  TicketProvider.missing_checkboxes=true;
+                  if (auth.currentUser == null || googleSignIn == null) {
+                    print("user is not register");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegisterPage(),
+                      ),
+                    );
+                    TicketProvider.missing_checkboxes = true;
+                  } else {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PaymentPage(),
+                      ),
+                    );
+                    TicketProvider.missing_checkboxes = true;
+                  }
+                } else {
+                  print('Ticket hasnt been filed completly ');
+                  //showFlushbar1(context, text: "הטבלאות לא מלאות, נא בדיקתך");
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-                else{
-                  Navigator.of(
-                    context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PaymentPage(),
-                    ),
-                  );
-                  TicketProvider.missing_checkboxes=true;
-                }
-              }else{
-                print('Ticket hasnt been filed completly ');
-                showFlushbar1(context, text: "הטבלאות לא מלאות, נא בדיקתך");
-              }
               });
         })
       ]),
@@ -131,14 +135,12 @@ class _RegularTicketState extends State<RegularTicket> {
   }
 }
 
-
-Future<bool> getBoolValuesSF() async {
+Future<bool?> getBoolValuesSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //Return bool
   //print (prefs.getBool('isRegister'));   /true or false
   final myBool = prefs.getBool('my_bool_key') ?? false;
   return prefs.getBool('isRegister');
-
 }
 
 addToSharedPrefAsRegister() async {

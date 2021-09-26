@@ -6,30 +6,27 @@ import 'package:provider/provider.dart';
 
 class RegisterTextField extends StatefulWidget {
   RegisterTextField(
-      {Key key,
-      @required this.name,
-      this.lastName,
-      this.controller,
+      {Key? key,
+      this.name,
+      this.keyboardType,
       this.labelName,
       this.returnErr,
       this.textDirection,
-      this.keyboardType,
       this.icon,
-      this.charLength})
+      this.charLength,
+      TextEditingController? controller})
       : super(key: key);
 
-  final TextEditingController controller;
-  final String labelName;
-  final String name;
-  final String lastName;
-  final TextInputType keyboardType;
-  final String returnErr;
-  final TextDirection textDirection;
-  final Icon icon;
-  int charLength;
+  final String? name;
+  final TextInputType? keyboardType;
+  final String? labelName;
+  final String? returnErr;
+  final TextDirection? textDirection;
+  final Icon? icon;
+  int? charLength;
 
   @override
-  _RegisterTextFieldState createState() => _RegisterTextFieldState(charLength);
+  _RegisterTextFieldState createState() => _RegisterTextFieldState(charLength!);
 }
 
 class _RegisterTextFieldState extends State<RegisterTextField> {
@@ -39,20 +36,22 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
   Widget build(BuildContext context) {
     widget.charLength = 4;
     return FormBuilderTextField(
-      name: widget.name,
+      name: widget.name!,
       textDirection: widget.textDirection,
       keyboardType: widget.keyboardType,
-      onChanged: (String value){Provider.of<LoginProvider>(context,listen: false).onChanged(value);},
+      onChanged: (String? value) {
+        Provider.of<LoginProvider>(context, listen: false).onChanged(value!);
+      },
       decoration: InputDecoration(
-        icon: widget.icon,
+        //icon: widget.icon,
         labelText: widget.labelName,
       ),
-      onSaved: (String value) {},
+      onSaved: (String? value) {},
       validator: _validator,
     );
   }
 
-  String _validator(String value) {
+  String? _validator(String? value) {
     if (widget.labelName == "שם פרטי") {
       if (value == null || value.isEmpty) {
         return widget.returnErr;
@@ -73,7 +72,7 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
         return "כתובת אימייל לא תקינה";
       }
       return null;
-   /* } else if (widget.labelName == "טלפון נייד" ||
+      /* } else if (widget.labelName == "טלפון נייד" ||
         widget.labelName == "התחבר באמצעות מספר טלפון") {
       //^[1-9]\d*$
       if (value == null || value.isEmpty) {

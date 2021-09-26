@@ -30,15 +30,15 @@ class VerificationCodeK extends StatefulWidget {
   final Widget clearAll;
 
   VerificationCodeK({
-    this.onCompleted,
-    this.onEditing,
+    required this.onCompleted,
+    required this.onEditing,
     this.keyboardType = TextInputType.number,
     this.length = 4,
     this.itemSize = 50,
-    this.underlineColor,
+    required this.underlineColor,
     this.textStyle = const TextStyle(fontSize: 25.0),
     this.autofocus = false,
-    this.clearAll,
+    required this.clearAll,
   });
 
   @override
@@ -48,7 +48,7 @@ class VerificationCodeK extends StatefulWidget {
 class _VerificationCodeKState extends State<VerificationCodeK> {
   final List<FocusNode> _listFocusNode = <FocusNode>[];
   final List<TextEditingController> _listControllerText =
-  <TextEditingController>[];
+      <TextEditingController>[];
   List<String> _code = [];
   int _currentIndex = 0;
 
@@ -93,8 +93,7 @@ class _VerificationCodeKState extends State<VerificationCodeK> {
           borderSide: BorderSide(color: Colors.grey),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-              color: widget.underlineColor ?? Theme.of(context).primaryColor),
+          borderSide: BorderSide(color: widget.underlineColor),
         ),
         counterText: "",
         contentPadding: EdgeInsets.all(((widget.itemSize * 2) / 10)),

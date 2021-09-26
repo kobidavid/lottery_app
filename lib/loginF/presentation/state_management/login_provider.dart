@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -11,9 +10,7 @@ import 'package:lottery_app/loginF/core/failures.dart';
 import 'package:lottery_app/loginF/core/flash_alert.dart';
 import 'package:lottery_app/loginF/core/verify_auth_phone_number.dart';
 import 'package:lottery_app/loginF/data/repositories_imp/db_queries_imp.dart';
-import 'package:lottery_app/loginF/domain/repositories/db_queries_interface.dart';
 import 'package:lottery_app/loginF/presentation/pages/register_page.dart';
-import 'package:lottery_app/loginF/presentation/pages/verification_code_page.dart';
 import 'package:lottery_app/presentation/pages/payment_page.dart';
 
 import '../../../main.dart';
@@ -22,10 +19,10 @@ class LoginProvider with ChangeNotifier {
   //FirebaseAuth _auth = FirebaseAuth.instance;
 
   static String _aaa = "";
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
-  final GoogleSignIn googleSignIn;
-  final UserEntity currentLoggedInUser;
+  late final FirebaseAuth _auth;
+  late final FirebaseFirestore _firestore;
+  late final GoogleSignIn googleSignIn;
+  late final UserEntity currentLoggedInUser;
 
   final GlobalKey<FormBuilderState> fbKey = GlobalKey<FormBuilderState>();
   DBQueriesImp dbQueriesImp = DBQueriesImp();
@@ -38,30 +35,22 @@ class LoginProvider with ChangeNotifier {
         googleSignIn = GoogleSignIn(),
         currentLoggedInUser = getIt();
 
-  /* bool checkIfUserIsLogin() {
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
-      if (user == null) {
-        return false;
-      }
-    });
-    return true;
-  }*/
-
-  void logOutUser() {
+  logOutUser() {
     _auth.signOut();
     googleSignIn.signOut();
     //firebaseAuth.currentUser;
     print('logout');
-    uNameForIcon="";
+    uNameForIcon = "";
     notifyListeners();
   }
 
   Future<Either<UserEntity, LoginFailure>> _signInWithGoogle(context) async {
     //await Firebase.initializeApp();
 
-    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAccount? googleSignInAccount =
+        await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+        await googleSignInAccount!.authentication;
 
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,
@@ -69,35 +58,35 @@ class LoginProvider with ChangeNotifier {
     );
 
     UserCredential authResult;
+    authResult = await _auth.signInWithCredential(credential);
     User user;
+    user = authResult.user!;
+
     if (_auth.currentUser == null || googleSignIn.currentUser == null) {
       DBQueriesImp dbQueriesImp = DBQueriesImp();
       if (await dbQueriesImp.checkIfEmailExistInFireStore(
               context, googleSignInAccount.email.toString()) ==
           true) {
-        authResult = await _auth.signInWithCredential(credential);
-        user = authResult.user;
         userNameForIcon();
         return Left(currentLoggedInUser);
       } else {
         print("email_does_not_exist");
-        showFlushbar1(context, text: "כתובת המייל לא מוכרת במערכת");
+        //showFlushbar1(context, text: "כתובת המייל לא מוכרת במערכת");
         _auth.signOut();
         googleSignIn.signOut();
         //user = _auth.currentUser;
         //return Right(LoginFailure());
       }
-    }
-    else if (user != null) {
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
+    } else
+      user = authResult.user!;
+    assert(user.isAnonymous);
 
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
-      print('signInWithGoogle succeeded: $user');
+    final User? currentUser = _auth.currentUser;
+    assert(user.uid == currentUser!.uid);
+    print('signInWithGoogle succeeded: $user');
 
-      return Left(currentLoggedInUser);
-    }
+    return Left(currentLoggedInUser);
+
     //return Right(LoginFailure());
     return Right(LoginFailure());
   }
@@ -126,23 +115,24 @@ class LoginProvider with ChangeNotifier {
         context, MaterialPageRoute(builder: (context) => PaymentPage()));
   }
 
-  Future<bool> checkFirstLoginUser(context) async {
+  Future<bool?> checkFirstLoginUser(context) async {
     //‏בדיקה אם המשתמש עבר תהליך הרישום
     bool result;
     await FirebaseFirestore.instance
         .collection("users")
-        .doc(_auth.currentUser.email)
+        .doc(_auth.currentUser!.email)
         .get()
         .then((doc) {
       if (doc.exists) {
         navigateToDrawerPage(context);
         result = false;
+        return result;
       } else {
         navigateToRegisterProfilePage(context);
         result = true;
+        return result;
       }
     });
-    return result;
   }
 
   void checkUserLogin(context) async {
@@ -153,7 +143,7 @@ class LoginProvider with ChangeNotifier {
     }
   }
 
-  Future<User> getuserState() {
+/*   Future<User> getuserState() {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -161,38 +151,35 @@ class LoginProvider with ChangeNotifier {
         print('User is signed in!');
       }
     });
-  }
+  } */
 
-  String uNameForIcon="";
-  Future <void> userNameForIcon() async{
-    //_auth.currentUser.phoneNumber==null?
-    //String email=_auth.currentUser.email??"kobi";
-    //String phone=_auth.currentUser.phoneNumber??"333";
-
-    uNameForIcon=await dbQueriesImp.returnUserNameInFireStore();
-    //uNameForIcon=await dbQueriesImp.returnUserNameInFireStore(_auth.currentUser.email!=null?_auth.currentUser.email:_auth.currentUser.phoneNumber!=null?_auth.currentUser.phoneNumber:"");
-    //uNameForIcon=await dbQueriesImp.returnUserNameInFireStore(_auth.currentUser.phoneNumber);
+  String uNameForIcon = "";
+  Future<void> userNameForIcon() async {
+    uNameForIcon = (await dbQueriesImp.returnUserNameInFireStore())!;
     notifyListeners();
   }
 
   Future<void> loginUserByPhoneNum(context, String phoneNumber) async {
-    bool isLoginMethod=true;
-    if (fbKey.currentState.saveAndValidate()) {
+    bool isLoginMethod = true;
+    if (fbKey.currentState!.saveAndValidate()) {
       bool phoneExist =
           await dbQueriesImp.checkIfPhoneExist(context, phoneNumber);
-      if (phoneExist == true) { //user phone exist so we can proceed with phone auth login
-        VerifyAuthPhoneNumber verifyAuthPhoneNumber=VerifyAuthPhoneNumber();
-        await verifyAuthPhoneNumber.verifyAuthPhoneNum(phoneNumber, context,isLoginMethod);}
-        /* } else {
+      if (phoneExist == true) {
+        //user phone exist so we can proceed with phone auth login
+        VerifyAuthPhoneNumber verifyAuthPhoneNumber = VerifyAuthPhoneNumber();
+        await verifyAuthPhoneNumber.verifyAuthPhoneNum(
+            phoneNumber, context, isLoginMethod);
+      }
+      /* } else {
         return false;
       }*/
-      } else {
-        showFlushbar1(context, text: "מספר הטלפון לא קיים במערכת");
-      }
+    } else {
+      //showFlushbar1(context, text: "מספר הטלפון לא קיים במערכת");
     }
+  }
 
   int charLength = 0;
-  String charValue;
+  late String charValue;
 
   onChanged(String value) {
     charValue = value;
@@ -201,6 +188,3 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-
-
-

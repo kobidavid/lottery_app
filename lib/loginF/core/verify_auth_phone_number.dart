@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:lottery_app/loginF/presentation/pages/verification_code_page.dart';
 
 class VerifyAuthPhoneNumber {
-
-  Future verifyAuthPhoneNum(String phoneNumber, context,bool isLoginMethod) async {
+  Future verifyAuthPhoneNum(
+      String phoneNumber, context, bool isLoginMethod) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phoneNumber,
 
@@ -19,13 +19,16 @@ class VerifyAuthPhoneNumber {
         // callback which gets called when the verification failed,
         print(exception);
       },
-      codeSent: (String verificationId, int resendToken) async {
+      codeSent: (String verificationId, int? resendToken) async {
         // callback which gets called when the code send successfully to the device,
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => VerificationCodePage(
-                    phoneNumber: phoneNumber, verificationId: verificationId,isLoginMethod: isLoginMethod,)));
+                      phoneNumber: phoneNumber,
+                      verificationId: verificationId,
+                      isLoginMethod: isLoginMethod,
+                    )));
       },
 
       codeAutoRetrievalTimeout: (String verificationId) {},

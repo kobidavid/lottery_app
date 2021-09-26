@@ -1,6 +1,5 @@
-class SharedPreferenceName{
+class SharedPreferenceName {
+  String name;
 
-   String name;
-
-  SharedPreferenceName({this.name});
+  SharedPreferenceName({required this.name});
 }

@@ -17,7 +17,7 @@ class AreaCalculator {
 
   AreaCalculator(this.shapes);
 
-  num sum() {
+  /*  num sum() {
     List<num> area = List<num>();
     for (var shape in shapes) {
       if (shape is Square) {
@@ -28,7 +28,7 @@ class AreaCalculator {
       }
       return area.reduce((x, y) => x + y);
     }
-  }
+  } */
 }
 
 class SumCalcOutputter {

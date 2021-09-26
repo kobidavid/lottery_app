@@ -2,15 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lottery_app/core/di/di.dart';
-import 'package:lottery_app/domain/entities/user_entity.dart';
 import 'package:lottery_app/presentation/pages/home_page.dart';
 import 'package:lottery_app/loginF/presentation/state_management/login_provider.dart';
 import 'package:lottery_app/loginF/presentation/state_management/register_provider.dart';
 import 'package:lottery_app/presentation/state_management/ticket_provider.dart';
-import 'package:lottery_app/services/sp_service.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'core/service_locator.dart';
 import 'presentation/pages/double_ticket.dart';
 import 'presentation/pages/regular_ticket.dart';
@@ -24,9 +20,9 @@ void main(List<String> args) async {
   //getIt.registerSingleton<UserEntity>(UserEntity(), signalsReady: true);
 
   var x = LoginProvider();
-  FirebaseAuth _auth;
+  //FirebaseAuth? _auth = FirebaseAuth.instance;
   //if (_auth != null) {
-    await x.userNameForIcon();
+  x.userNameForIcon();
   //}
 
   runApp(MultiProvider(
@@ -60,7 +56,7 @@ class _AppState extends State<App> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.pink,
       ),
       darkTheme:
           ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
